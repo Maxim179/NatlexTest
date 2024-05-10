@@ -7,12 +7,19 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
-import DateRangePickerValue from '../Components/DatePicker';
-function Options() {
+
+function SettingsPage() {
+  //HOOKS
   const [charts, setCharts] = useState([]);
 
   const handleAddChart = () => {
     setCharts([...charts, { type: 'line', name: 'Basic graph', color: 'blue' }]);
+  };
+
+  const handleRemoveChart = (index) => {
+    const updatedCharts = [...charts];
+    updatedCharts.splice(index, 1);
+    setCharts(updatedCharts);
   };
 
   const handleTypeChange = (event, index) => {
@@ -43,68 +50,73 @@ function Options() {
           onTypeChange={handleTypeChange}
           onNameChange={handleNameChange}
           onColorChange={handleColorChange}
+          onRemove={() => handleRemoveChart(index)}
         />
       ))}
-      <Button onClick={handleAddChart} variant = 'contained' sx={{padding:1}}>Add new chart</Button>
+      <Button onClick={handleAddChart} variant="contained" sx={{ padding: 1 }}>
+        Add new chart
+      </Button>
     </Container>
   );
 }
 
-const ChartAdd = ({ chart, index, onTypeChange, onNameChange, onColorChange }) => {
+const ChartAdd = ({ chart, index, onTypeChange, onNameChange, onColorChange, onRemove }) => { //Getting options from user
   return (
-      <Container sx={{padding:0.5}}>
-        <Accordion>
-          <AccordionSummary aria-controls="panel1-content" id="panel1-header">
-            {chart.name}
-          </AccordionSummary>
-          <AccordionDetails>
-            <TextField
-              id="outlined-basic"
-              label="Name"
-              variant="outlined"
-              value={chart.name}
-              onChange={(event) => onNameChange(event, index)}
-              sx={{padding:0.5}}
-            />
-            <Box sx={{ minWidth: 120, padding:0.5}}>
-              <FormControl fullWidth>
-                <InputLabel id={`chart-type-label-${index}`}>Type</InputLabel>
-                <Select
-                  labelId={`chart-type-label-${index}`}
-                  id={`chart-type-select-${index}`}
-                  value={chart.type}
-                  label="Type"
-                  onChange={(event) => onTypeChange(event, index)}>
-                  <MenuItem value={'spline'}>Spline</MenuItem>
-                  <MenuItem value={'line'}>Line</MenuItem>
-                  <MenuItem value={'area'}>Area</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ minWidth: 120, padding:0.5 }}>
-              <FormControl fullWidth>
-                <InputLabel id={`chart-color-select-label-${index}`}>Colour</InputLabel>
-                <Select
-                  labelId={`chart-color-select-label-${index}`}
-                  id={`chart-color-select-${index}`}
-                  value={chart.color}
-                  label="Color"
-                  onChange={(event) => onColorChange(event, index)}>
-                  <MenuItem value={'red'}>Red</MenuItem>
-                  <MenuItem value={'blue'}>Blue</MenuItem>
-                  <MenuItem value={'green'}>Green</MenuItem>
-                </Select>
-                <DateRangePickerValue />
-              </FormControl>
-            </Box>
-            <ChartPlot chart={chart} />
-          </AccordionDetails>
-        </Accordion>
-      </Container>
+    <Container sx={{ padding: 0.5 }}>
+      <Accordion>
+        <AccordionSummary aria-controls="panel1-content" id="panel1-header">
+          {chart.name}
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextField
+            id="outlined-basic"
+            label="Name"
+            variant="outlined"
+            value={chart.name}
+            onChange={(event) => onNameChange(event, index)}
+            sx={{ padding: 0.5 }}
+          />
+          <Box sx={{ minWidth: 120, padding: 0.5 }}>
+            <FormControl fullWidth>
+              <InputLabel id={`chart-type-label-${index}`}>Type</InputLabel>
+              <Select
+                labelId={`chart-type-label-${index}`}
+                id={`chart-type-select-${index}`}
+                value={chart.type}
+                label="Type"
+                onChange={(event) => onTypeChange(event, index)}>
+                <MenuItem value={'spline'}>Spline</MenuItem>
+                <MenuItem value={'line'}>Line</MenuItem>
+                <MenuItem value={'area'}>Area</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ minWidth: 120, padding: 0.5 }}>
+            <FormControl fullWidth>
+              <InputLabel id={`chart-color-select-label-${index}`}>Colour</InputLabel>
+              <Select
+                labelId={`chart-color-select-label-${index}`}
+                id={`chart-color-select-${index}`}
+                value={chart.color}
+                label="Color"
+                onChange={(event) => onColorChange(event, index)}>
+                <MenuItem value={'red'}>Red</MenuItem>
+                <MenuItem value={'blue'}>Blue</MenuItem>
+                <MenuItem value={'green'}>Green</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Button onClick={onRemove} variant="outlined" color="error">
+            Remove
+          </Button>
+          <ChartPlot chart={chart} />
+        </AccordionDetails>
+      </Accordion>
+    </Container>
   );
 };
 
-const ChartPlot = ({ chart }) => {
+const ChartPlot = ({ chart }) => { //drawing chart
   const chartOptions = {
     chart: {
       type: chart.type
@@ -131,4 +143,4 @@ const ChartPlot = ({ chart }) => {
   return <HighchartsReact highcharts={Highcharts} options={chartOptions} />;
 };
 
-export default Options;
+export default SettingsPage;

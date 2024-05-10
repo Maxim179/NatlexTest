@@ -14,6 +14,15 @@ function NavigationMenu() {
           component='div'
           sx={{ flexGrow: 1, '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '5px' } }}
         >
+          <Link to='/ViewMode' style={{ textDecoration: 'none', color: 'inherit' }}>
+            View Mode
+          </Link>
+        </Typography>
+        <Typography 
+          variant='h6'
+          component='div'
+          sx={{ flexGrow: 1, '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)', borderRadius: '5px' } }}
+        >
           <Link to='/Options' style={{ textDecoration: 'none', color: 'inherit' }}>
             Settings
           </Link>

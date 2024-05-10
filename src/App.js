@@ -1,8 +1,8 @@
-import { Container, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Options from './Pages/Options';
 import NavigationMenu from './Pages/NavigationMenu';
-
+import SettignsPage from './Pages/Options';
+import ViewMode from './Pages/ViewMode';
 function App() {
   return (
     <header>
@@ -10,10 +10,9 @@ function App() {
     <BrowserRouter>
           <NavigationMenu/>      
           <Routes>
-            <Route path="/options" element={<Options />} />
+            <Route path="/Options" element={<SettignsPage />} />
+            <Route path="/ViewMode" element={<ViewMode />} />
           </Routes>
-      <Container sx={{bgcolor:'grey', alignItems:'center'}}>
-      </Container>
     </BrowserRouter>
     </header>
   );
