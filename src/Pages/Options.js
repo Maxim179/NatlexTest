@@ -8,24 +8,16 @@ import Box from '@mui/material/Box';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-export default function Pages(){
-  const [value, setValue] = React.useState('1');
 
-  const handleChange = (event, newValue) => {
+export default function Pages() {
+  //accordeon render each time user change anything. need to fix.
+  const [value, setValue] = React.useState('1');
+  const [charts, setCharts] = useState([]);
+
+  const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  function ViewMode(){//надо как-то получать сюда графики из OPtions
-    return(
-    <Container sx={{ bgcolor: 'FloralWhite', height: 800, alignItems: 'center' }}>
-        <Typography>
-            Graphs here
-        </Typography>
-    </Container>
-  );
-  }
-  const [charts, setCharts] = useState([]);
-  
   const handleAddChart = () => {
     setCharts([...charts, { type: 'line', name: 'Basic graph', color: 'blue' }]);
   };
@@ -53,8 +45,18 @@ export default function Pages(){
     updatedCharts[index].color = event.target.value;
     setCharts(updatedCharts);
   };
-  function SettingsPage() {
-    //HOOKS  
+
+  const ViewMode = ({ charts }) => {
+    return (
+      <Container sx={{ bgcolor: 'FloralWhite', height: 800, alignItems: 'center' }}>
+        {charts.map((chart, index) => (
+          <ChartPlot key={index} chart={chart} />
+        ))}
+      </Container>
+    );
+  };
+
+  const SettingsPage = () => {
     return (
       <Container sx={{ bgcolor: 'FloralWhite', height: 800, alignItems: 'center' }}>
         {charts.map((chart, index) => (
@@ -73,12 +75,13 @@ export default function Pages(){
         </Button>
       </Container>
     );
-  }
-  const ChartAdd = ({ chart, index, onTypeChange, onNameChange, onColorChange, onRemove }) => { //Getting options from user
+  };
+
+  const ChartAdd = ({ chart, index, onTypeChange, onNameChange, onColorChange, onRemove }) => {
     return (
       <Container sx={{ padding: 0.5 }}>
         <Accordion>
-          <AccordionSummary aria-controls="panel1-content" id="panel1-header">
+          <AccordionSummary aria-controls={`panel${index}-content`} id={`panel${index}-header`}>
             {chart.name}
           </AccordionSummary>
           <AccordionDetails>
@@ -98,7 +101,8 @@ export default function Pages(){
                   id={`chart-type-select-${index}`}
                   value={chart.type}
                   label="Type"
-                  onChange={(event) => onTypeChange(event, index)}>
+                  onChange={(event) => onTypeChange(event, index)}
+                >
                   <MenuItem value={'spline'}>Spline</MenuItem>
                   <MenuItem value={'line'}>Line</MenuItem>
                   <MenuItem value={'area'}>Area</MenuItem>
@@ -113,53 +117,58 @@ export default function Pages(){
                   id={`chart-color-select-${index}`}
                   value={chart.color}
                   label="Color"
-                  onChange={(event) => onColorChange(event, index)}>
+                  onChange={(event) => onColorChange(event, index)}
+                >
                   <MenuItem value={'red'}>Red</MenuItem>
                   <MenuItem value={'blue'}>Blue</MenuItem>
                   <MenuItem value={'green'}>Green</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-            <Button onClick={onRemove} variant="outlined" color="error">
+            <Button onClick={onRemove} variant="outlined" color="error">{/* Maybe add here modal window with confirmation */}
               Remove
             </Button>
-            <ChartPlot chart={chart} />
           </AccordionDetails>
         </Accordion>
       </Container>
     );
   };
-  const ChartPlot = ({ chart }) => { //drawing chart
+
+  const ChartPlot = ({ chart }) => {
     const chartOptions = {
-      chart: {type: chart.type},
-      title: {text: chart.name},
-      xAxis: {categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']},
-      yAxis: {title: {text: 'Temperature (°C)'}
-      },
+      chart: { type: chart.type },
+      title: { text: chart.name },
+      xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+      yAxis: { title: { text: 'Temperature (°C)' } },
       series: [
         {
           data: [1, 2, 1, 4, 3, 6, 7, 10, 25, 84, 11, 17],
-          color: chart.color
-        }
-      ]
+          color: chart.color,
+        },
+      ],
     };
-  
+
     return <HighchartsReact highcharts={Highcharts} options={chartOptions} />;
   };
-  return(
+
+  return (
     <header>
-    <Box sx={{ width: '100%', typography: 'body1' }}>
-      <TabContext value={value}>
-        <Box sx={{ backgroundColor: 'GhostWhite', borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="View Mode" value="1" />
-            <Tab label="Settings" value="2" />
-          </TabList>
-        </Box>
-        <TabPanel value="1"><ViewMode/></TabPanel>
-        <TabPanel value="2"><SettingsPage/></TabPanel>
-      </TabContext>
-    </Box>
+      <Box sx={{ width: '100%', typography: 'body1' }}>
+        <TabContext value={value}>
+          <Box sx={{ backgroundColor: 'GhostWhite', borderBottom: 1, borderColor: 'divider' }}>
+            <TabList onChange={handleTabChange} aria-label="lab API tabs example">
+              <Tab label="View Mode" value="1" />
+              <Tab label="Settings" value="2" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+            <ViewMode charts={charts} />
+          </TabPanel>
+          <TabPanel value="2">
+            <SettingsPage />
+          </TabPanel>
+        </TabContext>
+      </Box>
     </header>
-  )
+  );
 }
