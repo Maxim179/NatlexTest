@@ -8,10 +8,11 @@ import Box from '@mui/material/Box';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import MyDateRangePicker from '../Components/DatePicker';
 
 export default function Pages() {
   //accordeon render each time user change anything. need to fix.
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = useState('1');
   const [charts, setCharts] = useState([]);
 
   const handleTabChange = (event, newValue) => {
@@ -49,6 +50,7 @@ export default function Pages() {
   const ViewMode = ({ charts }) => {
     return (
       <Container sx={{ bgcolor: 'FloralWhite', height: 800, alignItems: 'center' }}>
+        <MyDateRangePicker />
         {charts.map((chart, index) => (
           <ChartPlot key={index} chart={chart} />
         ))}
