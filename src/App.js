@@ -1,7 +1,5 @@
 import { Typography } from '@mui/material';
 import Pages from './Pages/Options';
-import MyDateRangePicker from './Components/DatePicker';
-
 export default function App() {
   return (
     <header>

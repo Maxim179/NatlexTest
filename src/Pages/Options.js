@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Container, Modal, Tab, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Container, Tab, TextField, Box } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import HighchartsReact from 'highcharts-react-official';
+import Highcharts from 'highcharts';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Box from '@mui/material/Box';
-import HighchartsReact from 'highcharts-react-official';
-import Highcharts from 'highcharts';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import MyDateRangePicker from '../Components/DatePicker';
+import MyDateRangePicker from '../Components/DateRangePicker';
+import { data, numbers } from '../Components/Dates';
 
 export default function Pages() {
-  //accordeon render each time user change anything. need to fix.
+  //hooks
   const [value, setValue] = useState('1');
   const [charts, setCharts] = useState([]);
+  const [startDate, setStartDate] = useState('2024-05-01');
+  const [endDate, setEndDate] = useState('2024-05-10');
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -47,12 +49,27 @@ export default function Pages() {
     setCharts(updatedCharts);
   };
 
+  const handleDateChange = (newStartDate, newEndDate) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+  };
+
+  const filterDataByDateRange = () => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return data.filter(dateObj => {
+      const date = new Date(dateObj.date);
+      return date >= start && date <= end;
+    }).map(dateObj => dateObj.date);
+  };
+
   const ViewMode = ({ charts }) => {
+    const filteredDates = filterDataByDateRange();
     return (
       <Container sx={{ bgcolor: 'FloralWhite', height: 800, alignItems: 'center' }}>
-        <MyDateRangePicker />
+        <MyDateRangePicker startDate={startDate} endDate={endDate} onDateChange={handleDateChange} />
         {charts.map((chart, index) => (
-          <ChartPlot key={index} chart={chart} />
+          <ChartPlot key={index} chart={chart} dates={filteredDates} />
         ))}
       </Container>
     );
@@ -127,7 +144,7 @@ export default function Pages() {
                 </Select>
               </FormControl>
             </Box>
-            <Button onClick={onRemove} variant="outlined" color="error">{/* Maybe add here modal window with confirmation */}
+            <Button onClick={onRemove} variant="outlined" color="error">
               Remove
             </Button>
           </AccordionDetails>
@@ -136,15 +153,17 @@ export default function Pages() {
     );
   };
 
-  const ChartPlot = ({ chart }) => {
+  const ChartPlot = ({ chart, dates }) => {
+    const filteredNumbers = numbers.slice(0, dates.length);
+
     const chartOptions = {
       chart: { type: chart.type },
       title: { text: chart.name },
-      xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+      xAxis: { categories: dates },
       yAxis: { title: { text: 'Temperature (°C)' } },
       series: [
         {
-          data: [1, 2, 1, 4, 3, 6, 7, 10, 25, 84, 11, 17],
+          data: filteredNumbers.map(num => num.number),
           color: chart.color,
         },
       ],
